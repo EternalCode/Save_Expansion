@@ -1,6 +1,14 @@
 #ifndef POKEAGB_SAVE_H_
 #define POKEAGB_SAVE_H_
 
+
+// Each 4 KiB flash sector contains 3968 bytes of actual data followed by a 128 byte footer
+#define SECTOR_DATA_SIZE 0xFF0
+#define SECTOR_FOOTER_SIZE 128
+#define NUM_SECTORS_PER_SAVE_SLOT 14
+#define PLAYER_NAME_LENGTH 8
+#define FILE_SIGNATURE 0x08012025
+
 enum
 {
     SAVE_NORMAL = 0,
@@ -11,23 +19,81 @@ enum
     SAVE_HALL_OF_FAME_ERASE_BEFORE, // unused
 };
 
-// Each 4 KiB flash sector contains 3968 bytes of actual data followed by a 128 byte footer
-#define SECTOR_DATA_SIZE 3968
-#define SECTOR_FOOTER_SIZE 128
-
 
 struct SaveBlockChunk {
     u8* data;
-    u16 size
-}
+    u16 size;
+};
 
 struct SaveSectionOffset {
     u16 toAdd; // offset really
     u16 size;
 };
 
-
 struct SaveBlockChunk gRamSaveSectionLocations[0xE];
+
+struct Time
+{
+    /*0x00*/ s16 days;
+    /*0x02*/ s8 hours;
+    /*0x03*/ s8 minutes;
+    /*0x04*/ s8 seconds;
+};
+
+#define POKEMON_SLOTS_NUMBER 412
+#define DEX_FLAGS_NO ((POKEMON_SLOTS_NUMBER / 8) + ((POKEMON_SLOTS_NUMBER % 8) ? 1 : 0))
+
+struct Pokedex
+{
+    /*0x00*/ u8 order;
+    /*0x01*/ u8 unknown1;
+    /*0x02*/ u8 nationalMagic; // must equal 0xDA in order to have National mode
+    /*0x03*/ u8 unknown2;
+    /*0x04*/ u32 unownPersonality; // set when you first see Unown
+    /*0x08*/ u32 spindaPersonality; // set when you first see Spinda
+    /*0x0C*/ u32 unknown3;
+    /*0x10*/ u8 owned[DEX_FLAGS_NO];
+    /*0x44*/ u8 seen[DEX_FLAGS_NO];
+};
+
+struct UnkSaveBlock2Substruct_55C
+{
+    /* 0x000:0x55C */ u8 unk_00_0:1;
+    u8 unk_00_1:1;
+    /* 0x001:0x55D */ u8 unk_01;
+    /* 0x002:0x55E */ u8 unk_02[2];
+    /* 0x004:0x560 */ u16 unk_04[2];
+    /* 0x008:0x564 */ u16 unk_08[2];
+    /* 0x00C:0x568 */ u16 unk_0C[2];
+    /* 0x010:0x56C */ u8 unk_10;
+    /* 0x011:0x56D */ u8 unk_11[3];
+    /* 0x014:0x570 */ u16 unk_14;
+    /* 0x016:0x572 */ u8 unk_16;
+}; // size: 0x018
+
+#define LINK_B_RECORDS_COUNT 5
+
+struct LinkBattleRecord
+{
+    u8 name[PLAYER_NAME_LENGTH];
+    u16 trainerId;
+    u16 wins;
+    u16 losses;
+    u16 draws;
+};
+
+struct LinkBattleRecords
+{
+    struct LinkBattleRecord entries[LINK_B_RECORDS_COUNT];
+    u8 languages[LINK_B_RECORDS_COUNT];
+};
+
+struct BerryCrush
+{
+    u16 berryCrushResults[4];
+    u32 berryPowderAmount;
+    u32 unk;
+};
 
 struct SaveBlock2
 {
@@ -62,7 +128,26 @@ struct SaveBlock2
     /*0xF20*/ u32 encryptionKey;
 };
 
-extern struct SaveBlock2 *gSaveBlock2Ptr;
+struct SaveSection
+{
+    u8 data[0xFF4];
+    u16 id;
+    u16 checksum;
+    u32 signature;
+    u32 counter;
+}; // size is 0x1000
+
+struct SaveSection* gFastSaveSection;
+struct SaveBlock2 *gSaveBlock2Ptr;
+u8* gSaveBlockParasitePtr;
+void SaveSerializedGame(void);
+void UpdateSaveAddresses(void);
+u32 CalculateChecksum(u8* data, u16 size);
+u16 gFirstSaveSector;
+u32 gPrevSaveCounter;
+u32 gSaveCounter;
+u8 TryWriteSector(u8 sector, u8 *data);
+u8 save_write_to_flash(u16 chunkId, const struct SaveBlockChunk *chunks);
 
 
 #endif /* POKEAGB_SAVE_H_ */

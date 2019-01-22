@@ -2,6 +2,9 @@
 #define POKEAGB_TYPES_H_
 
 
+#define NULL 0
+#define true 1
+#define false 0
 
 typedef unsigned char u8;
 typedef unsigned short int u16;
@@ -15,6 +18,7 @@ typedef volatile u32 vu32;
 typedef volatile s8 vs8;
 typedef volatile s16 vs16;
 typedef volatile s32 vs32;
+
 
 
 #endif /* POKEAGB_TYPES_H_ */

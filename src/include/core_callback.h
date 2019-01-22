@@ -2,6 +2,7 @@
 #define POKEAGB_CALLBACK_H_
 
 #include "types.h"
+#include "sprite.h"
 
 typedef void (*MainCallback)(void);
 typedef void (*IntrCallback)(void);
@@ -50,7 +51,7 @@ struct Main
     /*0x02E*/ enum Keypad newKeys;               // newly pressed keys with L=A remapping
     /*0x030*/ enum Keypad newAndRepeatedKeys;    // newly pressed keys plus key repeat
     /*0x032*/ enum Keypad keyRepeatCounter;      // counts down to 0, triggering key repeat
-    /*0x034*/ bool16 watchedKeysPressed; // whether one of the watched keys was pressed
+    /*0x034*/ u16 watchedKeysPressed; // whether one of the watched keys was pressed
     /*0x036*/ u16 watchedKeysMask;       // bit mask for watched keys
 
     /*0x038*/ struct OamData oamBuffer[128];
