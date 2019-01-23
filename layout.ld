@@ -1,6 +1,6 @@
 OUTPUT_ARCH(arm)
 MEMORY {
-        rom     : ORIGIN = 0x09800000, LENGTH = 32M
+        rom     : ORIGIN = 0x09700000, LENGTH = 32M
 }
 
 INCLUDE symbols.ld
