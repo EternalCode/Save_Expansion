@@ -133,12 +133,14 @@ u8 HandleLoadSector(u16 a1, const struct SaveBlockChunk *chunks) {
             *gFirstSaveSector = i;
         u16 checksum = CalculateChecksum(saveSection->data, chunks[id].size);
         checksum_status = checksum == saveSection->checksum;
-        if (saveSection->signature == FILE_SIGNATURE && checksum_status) {
+        checksum_status = checksum && saveSection->signature == FILE_SIGNATURE;
+        if (checksum_status) {
             memcpy(chunks[id].data, saveSection->data, chunks[id].size);
             loadParasite();
         }
     }
     // start of the game don't load jibberish into block
+    dprintf("checksum status is %d\n", checksum_status);
     if (checksum_status)
         loadSector30And31();
     return 1;
@@ -176,7 +178,6 @@ void call_something(u16 arg, EraseFlash func) {
 u8 HandleSavingData(u8 saveType) {
     u32 *backupPtr = gMain.vblankCounter1;
     //u8 *tempAddr;
-
     gMain.vblankCounter1 = NULL;
     UpdateSaveAddresses();
     switch (saveType) {
