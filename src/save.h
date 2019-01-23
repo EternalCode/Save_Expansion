@@ -8,6 +8,11 @@
 #define NUM_SECTORS_PER_SAVE_SLOT 14
 #define PLAYER_NAME_LENGTH 8
 #define FILE_SIGNATURE 0x08012025
+#define gSaveBlockParasite 0x0203B174
+#define parasiteSize 0xEC4
+
+// yes that's var 0x8000. It will be used for save index tracking.
+u8* ParasiteSizeIndex = (u8*)0x020370B8;
 
 enum
 {
@@ -137,17 +142,18 @@ struct SaveSection
     u32 counter;
 }; // size is 0x1000
 
+
 struct SaveSection* gFastSaveSection;
 struct SaveBlock2 *gSaveBlock2Ptr;
-u8* gSaveBlockParasitePtr;
+u16* gFirstSaveSector;
+u32* gSaveCounter;
+
+
 void SaveSerializedGame(void);
 void UpdateSaveAddresses(void);
-u32 CalculateChecksum(u8* data, u16 size);
-u16 gFirstSaveSector;
-u32 gPrevSaveCounter;
-u32 gSaveCounter;
+u16 CalculateChecksum(void* data, u16 size);
+u8 DoReadFlashWholeSection(u8 sector, struct SaveSection *section);
 u8 TryWriteSector(u8 sector, u8 *data);
 u8 save_write_to_flash(u16 chunkId, const struct SaveBlockChunk *chunks);
-
 
 #endif /* POKEAGB_SAVE_H_ */

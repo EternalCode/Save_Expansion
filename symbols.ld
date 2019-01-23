@@ -20,20 +20,21 @@ SetSerialCallback = 0x08000718|1;
 /*
  * save.h
  */
- gSaveBlockParasitePtr = 0x0203B174; /* Pointer to parasite saveblock */
+
  gRamSaveSectionLocations = 0x030053B0;
  gSaveBlock1Ptr = 0x03005008;
  gSaveBlock2Ptr = 0x0300500C;
  gSaveBlock3Ptr = 0x030050010;
  gFirstSaveSector = 0x03005380;
  gSaveCounter = 0x03005390;
- gFastSaveSection = 0x03005380;
+ gFastSaveSection = 0x03005394;
 
  SaveSerializedGame = 0x0804C300|1;
  UpdateSaveAddresses = 0x080DA1D4|1;
  CalculateChecksum = 0x080DA1A8|1;
  TryWriteSector = 0x080D99D8|1;
  save_write_to_flash = 0x080D97D0|1;
+ DoReadFlashWholeSection = 0x080DA190|1;
 
 
 /*
