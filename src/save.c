@@ -133,7 +133,7 @@ u8 HandleLoadSector(u16 a1, const struct SaveBlockChunk *chunks) {
             *gFirstSaveSector = i;
         u16 checksum = CalculateChecksum(saveSection->data, chunks[id].size);
         checksum_status = checksum == saveSection->checksum;
-        checksum_status = checksum && saveSection->signature == FILE_SIGNATURE;
+        checksum_status = checksum_status && (saveSection->signature == FILE_SIGNATURE);
         if (checksum_status) {
             memcpy(chunks[id].data, saveSection->data, chunks[id].size);
             loadParasite();
